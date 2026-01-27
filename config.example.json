@@ -1,0 +1,27 @@
+{
+    "api": {
+        "base_url": "https://hub.aixcrypto.ai/api/game",
+        "timeout_seconds": 7
+    },
+    "trigger": {
+        "target_seconds": 3.0,
+        "visual_offset": 0.0,
+        "concurrency": 4,
+        "auto_bet": {
+            "enabled": true
+        },
+        "browser_trigger": {
+            "countdown_seconds": 3,
+            "required_color": "emerald",
+            "headless": true
+        }
+    },
+    "proxy": {
+        "enabled": false,
+        "host": "YOUR_PROXY_HOST",
+        "start_port": 10000,
+        "username": "YOUR_PROXY_USERNAME",
+        "password": "YOUR_PROXY_PASSWORD",
+        "countries": "sg,gb,hk,jp"
+    }
+}

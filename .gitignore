@@ -1,0 +1,129 @@
+# ==================== 敏感信息 ====================
+# 账号私钥文件（绝对不能上传！）
+accounts.csv
+*.csv
+
+# 会话缓存（包含登录凭证）
+session_cache.json
+*.cache
+
+# 环境变量文件
+.env
+.env.*
+!.env.example
+
+# 配置文件（包含代理信息）
+config.json
+!config.example.json
+
+# ==================== Python ====================
+# 字节码
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 虚拟环境
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 分发 / 打包
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==================== 调试与测试 ====================
+# 调试脚本
+debug_*.py
+diagnose_*.py
+test_*.py
+verify_*.py
+
+# 测试输出
+*.txt
+!requirements.txt
+!README.txt
+
+# 临时文件
+*.tmp
+*.temp
+
+# ==================== 日志与输出 ====================
+# 日志文件
+*.log
+logs/
+*.log.*
+
+# 截图和录屏
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.mp4
+*.webm
+
+# HTML 缓存
+*.html
+!index.html
+
+# ==================== IDE ====================
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# ==================== 操作系统 ====================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ==================== 项目特定 ====================
+# FlareSolverr 相关
+启动FlareSolverr.bat
+
+# 临时 Markdown 文档（保留 README.md）
+*总结.md
+*说明.md
+*指南.md
+*方案.md
+*报告.md
+快速*.md
+!README.md
