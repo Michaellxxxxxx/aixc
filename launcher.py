@@ -6,12 +6,47 @@ import time
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+
 def print_header():
     print("=" * 50)
     print("       AIX 自动化脚本启动菜单")
     print("=" * 50)
 
+def check_and_init_files():
+    """检查并初始化必要的配置文件"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 1. 检查 config.json
+    config_path = os.path.join(base_dir, 'config.json')
+    config_example_path = os.path.join(base_dir, 'config.example.json')
+    if not os.path.exists(config_path) and os.path.exists(config_example_path):
+        try:
+            import shutil
+            shutil.copy2(config_example_path, config_path)
+            print(f"[✓] 已自动创建默认配置文件: config.json")
+            print(f"    请记得编辑它以配置您的参数！")
+        except Exception as e:
+            print(f"[!] 创建 config.json 失败: {e}")
+
+    # 2. 检查 accounts.csv
+    accounts_path = os.path.join(base_dir, 'accounts.csv')
+    accounts_example_path = os.path.join(base_dir, 'accounts.example.csv')
+    if not os.path.exists(accounts_path) and os.path.exists(accounts_example_path):
+        try:
+            import shutil
+            shutil.copy2(accounts_example_path, accounts_path)
+            print(f"[✓] 已自动创建默认账号文件: accounts.csv")
+            print(f"    请务必编辑它并填入您的私钥！")
+        except Exception as e:
+            print(f"[!] 创建 accounts.csv 失败: {e}")
+    
+    # 简单的视觉分隔
+    if not os.path.exists(config_path) or not os.path.exists(accounts_path):
+        print("-" * 50)
+        time.sleep(2)  # 给用户一点时间看提示
+
 def main():
+    check_and_init_files()
     while True:
         clear_screen()
         print_header()
