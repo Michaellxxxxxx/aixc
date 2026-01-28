@@ -67,6 +67,8 @@ class EnhancedBrowserAPIClient:
         self.max_retries = max_retries
         self.verbose = verbose
         
+        self.last_status = 0  # 暴露最后的 HTTP 状态码供外部检查
+        
         # 性能统计
         self.stats = {
             "total_requests": 0,
@@ -100,6 +102,7 @@ class EnhancedBrowserAPIClient:
         Returns:
             成功返回 JSON 数据,失败返回 None
         """
+        self.last_status = 0  # 重置状态码
         for attempt in range(1, self.max_retries + 1):
             try:
                 start_time = time.time()
@@ -173,6 +176,7 @@ class EnhancedBrowserAPIClient:
                 
                 # 记录状态码
                 status = result.get("status", 0)
+                self.last_status = status  # 更新最后状态码
                 if status:
                     self.stats["status_codes"][status] = self.stats["status_codes"].get(status, 0) + 1
                 

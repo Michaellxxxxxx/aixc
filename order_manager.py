@@ -6,7 +6,7 @@ import time
 from eth_account import Account
 from eth_account.messages import encode_defunct
 from colorama import Fore, Style
-from proxy_manager import build_proxy_url
+from proxy_manager import build_proxy_url, initialize_port_pool, mark_proxy_failed
 
 # Session 缓存文件路径
 SESSION_CACHE_FILE = os.path.join(os.path.dirname(__file__), 'session_cache.json')
@@ -60,6 +60,9 @@ class OrderManager:
             print(f"{Fore.GREEN}[✓] DataImpulse 代理已启用: {self._proxy_config.get('host')}:{self._proxy_config.get('start_port')}{Style.RESET_ALL}")
             # 添加代理测试提示
             print(f"{Fore.CYAN}[i] 代理将在首次使用时自动测试连接{Style.RESET_ALL}")
+            # 初始化代理端口池
+            initialize_port_pool(self._proxy_config, len(self.all_accounts))
+            print(f"{Fore.GREEN}[✓] 代理端口池已初始化 (支持故障自动切换){Style.RESET_ALL}")
         else:
             print(f"{Fore.YELLOW}[!] 代理未配置或已禁用，将直连{Style.RESET_ALL}")
         
@@ -126,7 +129,7 @@ class OrderManager:
         if not self._proxy_enabled:
             return None
         account_index = self._account_index_map.get(addr, 0)
-        return build_proxy_url(self._proxy_config, account_index)
+        return build_proxy_url(self._proxy_config, account_index, addr)
     
     async def _test_proxy_connection(self):
         """测试代理连接是否可用"""
@@ -296,6 +299,17 @@ class OrderManager:
                 return None
             except aiohttp.ClientError as e:
                 error_msg = f"{type(e).__name__}: {str(e)[:80]}"
+                
+                # 检测特定网络错误,标记代理端口故障
+                error_type = type(e).__name__
+                if error_type in ['ClientHttpProxyError', 'ServerDisconnectedError', 'ClientProxyConnectionError']:
+                    if self._proxy_enabled:
+                        account_index = self._account_index_map.get(addr, 0)
+                        print(f"  {Fore.YELLOW}[!] {addr[:10]} 检测到代理故障: {error_type}{Style.RESET_ALL}")
+                        mark_proxy_failed(addr, account_index)
+                        # 重新获取代理URL (已切换到新端口)
+                        proxy_url = self._get_proxy_for_account(addr)
+                
                 if attempt < max_retries:
                     print(f"  {Fore.YELLOW}[!] {addr[:10]} 网络错误，重试 ({attempt + 1}/{max_retries}): {error_msg}{Style.RESET_ALL}")
                     await asyncio.sleep(1)
@@ -412,7 +426,16 @@ class OrderManager:
             print(f"  {Fore.RED}[!] {label} 下单超时 (网络延迟过高){Style.RESET_ALL}")
             return False
         except aiohttp.ClientError as e:
-            print(f"  {Fore.RED}[!] {label} 网络错误: {type(e).__name__} - {str(e)[:100]}{Style.RESET_ALL}")
+            error_type = type(e).__name__
+            print(f"  {Fore.RED}[!] {label} 网络错误: {error_type} - {str(e)[:100]}{Style.RESET_ALL}")
+            
+            # 检测特定网络错误,标记代理端口故障
+            if error_type in ['ClientHttpProxyError', 'ServerDisconnectedError', 'ClientProxyConnectionError']:
+                if self._proxy_enabled:
+                    account_index = self._account_index_map.get(addr, 0)
+                    print(f"  {Fore.YELLOW}[!] {label} 检测到代理故障,自动切换端口...{Style.RESET_ALL}")
+                    mark_proxy_failed(addr, account_index)
+            
             return False
         except Exception as e:
             import traceback
@@ -560,12 +583,19 @@ class OrderManager:
         return sum(1 for r in results if r)
 
     def _trigger_daily_tasks_if_needed(self, addr):
-        """检查并触发每日任务"""
+        """检查并触发每日任务（后台执行，不阻塞下单）"""
         if addr in self.finished_accounts and addr not in self.tasks_claimed_accounts:
             sid = self.session_cache.get(addr)
             if sid:
                 self.tasks_claimed_accounts.add(addr)
-                asyncio.create_task(self.claim_daily_tasks(addr, sid))
+                # 创建后台任务，不阻塞下单流程
+                task = asyncio.create_task(self.claim_daily_tasks(addr, sid))
+                # 保存任务引用，防止被垃圾回收
+                if not hasattr(self, '_background_tasks'):
+                    self._background_tasks = set()
+                self._background_tasks.add(task)
+                # 任务完成后自动清理
+                task.add_done_callback(self._background_tasks.discard)
 
     async def claim_daily_tasks(self, addr, sid):
         """执行每日任务自动签到"""
