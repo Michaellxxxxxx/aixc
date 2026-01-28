@@ -2,10 +2,12 @@
 # 账号私钥文件（绝对不能上传！）
 accounts.csv
 *.csv
+!accounts.example.csv
 
 # 会话缓存（包含登录凭证）
 session_cache.json
 *.cache
+!session_cache.example.json
 
 # 环境变量文件
 .env

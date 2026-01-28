@@ -1,0 +1,9 @@
+{
+    "说明": "这是会话缓存示例文件,程序运行时会自动生成真实的 session_cache.json",
+    "格式说明": {
+        "钱包地址": "会话ID(自动生成)"
+    },
+    "示例": {
+        "0x1234567890abcdef1234567890abcdef12345678": "example_session_id_will_be_generated_automatically"
+    }
+}
