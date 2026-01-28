@@ -4,16 +4,13 @@
         "timeout_seconds": 7
     },
     "trigger": {
-        "target_seconds": 3.0,
-        "visual_offset": 0.0,
         "concurrency": 4,
         "auto_bet": {
             "enabled": true
         },
         "browser_trigger": {
             "countdown_seconds": 3,
-            "required_color": "emerald",
-            "headless": true
+            "headless": false
         }
     },
     "proxy": {
@@ -23,5 +20,37 @@
         "username": "YOUR_PROXY_USERNAME",
         "password": "YOUR_PROXY_PASSWORD",
         "countries": "sg,gb,hk,jp"
+    },
+    "_注释说明": {
+        "api": {
+            "base_url": "AIX API 基础地址,通常不需要修改",
+            "timeout_seconds": "API 请求超时时间(秒),建议 5-10 秒"
+        },
+        "trigger": {
+            "concurrency": "并发账号数量,建议 4-10 个。采用动态替补机制:当账户达到100次后自动用备用账户替换",
+            "auto_bet": {
+                "enabled": "全局下单开关。true=自动下单, false=仅监控不下单"
+            },
+            "browser_trigger": {
+                "countdown_seconds": "触发下单的倒计时秒数,建议 3 秒。当倒计时显示此秒数时触发(如3表示00:03)",
+                "headless": "无头模式。true=不显示浏览器(服务器推荐), false=显示浏览器(本地调试)"
+            }
+        },
+        "proxy": {
+            "说明": "代理配置(可选,但强烈推荐使用以避免 IP 被封)",
+            "enabled": "是否启用代理。true=启用, false=禁用",
+            "host": "代理服务器地址,如: 74.81.81.81",
+            "start_port": "起始端口号,每个账号会使用不同端口(start_port + 账号索引)",
+            "username": "代理用户名",
+            "password": "代理密码",
+            "countries": "代理国家代码,逗号分隔,如: sg,gb,hk,jp (新加坡,英国,香港,日本)"
+        },
+        "使用步骤": [
+            "1. 复制此文件: copy config.example.json config.json",
+            "2. 编辑 config.json 填写真实配置",
+            "3. 如果没有代理,将 proxy.enabled 设为 false",
+            "4. 如果有代理,填写真实的 host, username, password",
+            "5. 保存后运行: python launcher.py"
+        ]
     }
 }
