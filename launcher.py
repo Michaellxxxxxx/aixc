@@ -50,7 +50,7 @@ def main():
     while True:
         clear_screen()
         print_header()
-        print("\n请选择要启动的功能模块：\n")
+        print("\n请选择要启动的功能模块:\n")
         print("1. [主程序] AIX 监控 (aix_monitor.py) ★网页开盘价+API当前价")
         print("2. [管理] 订单管理 (order_manager.py)")
         print("3. [任务] 每日任务检查 (check_tasks.py)")
