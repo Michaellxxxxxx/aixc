@@ -121,11 +121,18 @@ $RECYCLE.BIN/
 # FlareSolverr 相关
 启动FlareSolverr.bat
 
-# 临时 Markdown 文档（保留 README.md）
+# 临时 Markdown 文档（只保留 README.md 和 LICENSE）
 *总结.md
 *说明.md
 *指南.md
 *方案.md
 *报告.md
+*详解.md
 快速*.md
+CLEANUP*.md
+UPLOAD*.md
+SECURITY*.md
+NEXT*.md
+GITHUB*.md
 !README.md
+!LICENSE.md
